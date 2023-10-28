@@ -1,15 +1,15 @@
-Member 1 - Docker Compose Execution
+i201770 Zeerak Zubair - Docker Compose Execution
 · Execute Jenkins pipeline using jenkinsfile and run the services mentioned in the
 docker compose file created in CA4
 · You will NOT create docker images in this execution. Docker images of the front
 end and the back end must be already uploaded on the docker hub. You can add
 a check for their existence.
 
-Member 2 - Web Server Service
+i201866 Faraz Razi- Web Server Service
 · Create and upload the docker image of the web service by using the jenkinsfile
 stored in your branch.
 · Please ensure that I can access your web service by calling http://localhost:8080
 
-Member 3 - Database Service
+i201893 Ahmed - Database Service
 · Create and upload the docker image of the Database service by using the
 jenkinsfile stored in your branch.
