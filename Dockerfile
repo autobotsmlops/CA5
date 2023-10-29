@@ -10,7 +10,7 @@ ENV NAME World
 
 WORKDIR /home/app
 
-RUN make install
+RUN pip install -r requirements.txt
 
 # Run main.py when the container launches
 CMD ["python", "src/main.py"]
