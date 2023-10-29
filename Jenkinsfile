@@ -14,7 +14,7 @@ pipeline {
         MYSQL_DATABASE = 'TODO'
         MYSQL_USER = 'root'
         MYSQL_PASSWORD = 'root'
-        SERVER_CREDENTIALS=credentials('autobotsDocker')
+        SERVER_CREDENTIALS=credentials('autobotsGit')
     }
 
     stages {
