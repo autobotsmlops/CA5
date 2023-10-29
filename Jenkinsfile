@@ -33,22 +33,13 @@ pipeline {
         stage('Build and Push Docker Images') {
             steps {
                 script {
-                    // Build Backend Image 
                     if (params.BUILD) {
+                        // Build Backend Image 
                         sh 'docker build -t ${BACKEND_IMAGE} -f Dockerfile ./src/web'
-                    }
-                }
-            }
-            steps {
-                script {
-                    // Build Frontend Image 
-                    if (params.BUILD) {
+                        // Build Frontend Image 
                         sh 'docker build -t ${FRONTEND_IMAGE} -f Dockerfile .'
                     } 
-                }
-            }
-            steps {
-                script {
+
                     // Push the Docker images to Docker Hub
                     sh 'docker push ${BACKEND_IMAGE}'
                     sh 'docker push ${FRONTEND_IMAGE}'
