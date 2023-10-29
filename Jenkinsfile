@@ -1,20 +1,21 @@
 pipeline {
     agent any
-
+    
+    environment {
+        MYSQL_ROOT_PASSWORD = 'root'
+        MYSQL_DATABASE = 'TODO'
+    }
+    
     stages {
-        stage('Build') {
+        stage('Build and Push Docker Image') {
             steps {
-                sh 'docker-compose build'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'docker-compose run --rm app python -m unittest discover -s tests -p "test*.py"'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh 'docker-compose up -d'
+                script {
+                    // Build and push MySQL Docker image
+                    docker.build("my-mysql-image:${env.BUILD_NUMBER}")
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        docker.image("my-mysql-image:${env.BUILD_NUMBER}").push()
+                    }
+                }
             }
         }
     }
