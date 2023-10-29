@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'agent-label' // Replace 'agent-label' with the label of an available Jenkins agent
-    }
+    agent any
     
     environment {
         DOCKER_HUB_USERNAME = credentials('autobotsmlops')
@@ -50,12 +48,10 @@ pipeline {
     
     post {
         always {
-            node('agent-label') {
                 sh 'docker stop backend-container'
                 sh 'docker stop frontend-container'
                 sh 'docker rm backend-container'
                 sh 'docker rm frontend-container'
-            }
         }
     }
 }
