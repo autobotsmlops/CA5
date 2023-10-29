@@ -48,11 +48,11 @@ pipeline {
     
     post {
         always {
-            script {
-                sh 'docker stop backend-container'
-                sh 'docker stop frontend-container'
-                sh 'docker rm backend-container'
-                sh 'docker rm frontend-container'
+            node {
+            sh 'docker stop backend-container'
+            sh 'docker stop frontend-container'
+            sh 'docker rm backend-container'
+            sh 'docker rm frontend-container'
             }
         }
     }
