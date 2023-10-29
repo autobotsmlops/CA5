@@ -37,7 +37,12 @@ pipeline {
 
     post {
         success {
+            echo "Success"
             // Add post-build steps here if needed
+        }
+        failure {
+            echo "Failure"
+            // Add failure-handling steps here if needed
         }
     }
 }
