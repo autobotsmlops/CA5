@@ -48,11 +48,11 @@ pipeline {
     
     post {
         always {
-            node {
-            sh 'docker stop backend-container'
-            sh 'docker stop frontend-container'
-            sh 'docker rm backend-container'
-            sh 'docker rm frontend-container'
+            node('agent-label') {
+                sh 'docker stop backend-container'
+                sh 'docker stop frontend-container'
+                sh 'docker rm backend-container'
+                sh 'docker rm frontend-container'
             }
         }
     }
