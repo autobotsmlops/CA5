@@ -6,8 +6,6 @@ pipeline {
        booleanParam(name: 'DEPLOY', defaultValue: true, description: 'added to enable or disable Deployement')
     }
 
-
-
     environment {
         BACKEND_IMAGE = 'autobotsmlops/ca4-web:latest'
         FRONTEND_IMAGE = 'autobotsmlops/ca4-db:latest'
@@ -30,6 +28,10 @@ pipeline {
                     }
                     if (!frontendImageExists) {
                         error("Frontend Docker image does not exist: ${FRONTEND_IMAGE}")
+                    }
+                }
+            }
+        }  
     
         stage('Build and Push Docker Image') {
             steps {
@@ -43,6 +45,8 @@ pipeline {
                     sh 'docker push ${FRONTEND_IMAGE}'
                 }
             }
+        }
+
         stage('Build and Run Docker Compose') {
             steps {
                 script {
@@ -52,7 +56,7 @@ pipeline {
                 // Build and run the Docker Compose services
                 sh 'docker-compose up -d'
             }
-        }
+        }   
     }
 
     post {
