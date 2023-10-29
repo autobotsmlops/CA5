@@ -50,10 +50,10 @@ pipeline {
         always {
             script {
                 // Stop and remove containers
-                dockerStop('backend-container')
-                dockerStop('frontend-container')
-                dockerRemove('backend-container')
-                dockerRemove('frontend-container')
+                docker.stop('backend-container', true)
+                docker.stop('frontend-container', true)
+                docker.remove('backend-container', true)
+                docker.remove('frontend-container', true)
             }
         }
     }
