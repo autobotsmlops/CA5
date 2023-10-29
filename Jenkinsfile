@@ -31,16 +31,30 @@ pipeline {
             }
         }
         
-        stage('Deploy with Docker Compose') {
+        stage('Deploy Containers') {
             steps {
-                sh 'docker-compose up -d'
+                script {
+                    docker.withRegistry('https://hub.docker.com', 'docker-hub-credentials') {
+                        // Start backend container
+                        docker.image('autobotsmlops/backend:latest').run('--name backend-container -d')
+                        
+                        // Start frontend container
+                        docker.image('autobotsmlops/frontend:latest').run('--name frontend-container -d')
+                    }
+                }
             }
         }
     }
     
     post {
         always {
-            sh 'docker-compose down'
+            script {
+                // Stop and remove containers
+                docker.stop('backend-container', true)
+                docker.stop('frontend-container', true)
+                docker.remove('backend-container', true)
+                docker.remove('frontend-container', true)
+            }
         }
     }
 }
