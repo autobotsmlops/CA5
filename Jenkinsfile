@@ -11,10 +11,8 @@ pipeline {
             steps {
                 script {
                     // Build and push MySQL Docker image
-                    docker.build("my-mysql-image:${env.BUILD_NUMBER}")
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        docker.image("my-mysql-image:${env.BUILD_NUMBER}").push()
-                    }
+                    def customImage = docker.build("my-mysql-image:${env.BUILD_NUMBER}", "-f src/db/Dockerfile .")
+                    customImage.push()
                 }
             }
         }
