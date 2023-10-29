@@ -1,13 +1,21 @@
 pipeline {
     agent any
 
+    parameters{
+       string(name: 'VERSION', defaultValue: '1.0', description: 'Add version number')
+       booleanParam(name: 'DEPLOY', defaultValue: true, description: 'added to enable or disable Deployement')
+    }
+
+
+
     environment {
-        BACKEND_IMAGE = 'autobotsmlops/backend:latest'
-        FRONTEND_IMAGE = 'autobotsmlops/frontend:latest'
+        BACKEND_IMAGE = 'autobotsmlops/ca4-web:latest'
+        FRONTEND_IMAGE = 'autobotsmlops/ca4-db:latest'
         MYSQL_ROOT_PASSWORD = 'root'
         MYSQL_DATABASE = 'TODO'
         MYSQL_USER = 'root'
         MYSQL_PASSWORD = 'root'
+        SERVER_CREDENTIALS=credentials('autobotsGit')
     }
 
     stages {
@@ -27,10 +35,12 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    def customImage = docker.build("database-service:${env.BUILD_NUMBER}")
+                    sh 'docker build -t ${BACKEND_IMAGE} -f Dockerfile ./src/db'
+                    sh 'docker build -t ${FRONTEND_IMAGE} -f Dockerfile .'
 
                     // Push the Docker image to Docker Hub
-                    customImage.push()
+                    sh 'docker push ${BACKEND_IMAGE}'
+                    sh 'docker push ${FRONTEND_IMAGE}'
                 }
             }
         stage('Build and Run Docker Compose') {
@@ -49,16 +59,11 @@ pipeline {
         success {
             echo "Success"
             // Add post-build steps here if needed
+            echo "Database Service built and pushed successfully!"
         }
         failure {
             echo "Failure"
             // Add failure-handling steps here if needed
-        }
-    }
-
-    post {
-        success {
-            echo "Database Service built and pushed successfully!"
         }
     }
 }
