@@ -20,8 +20,8 @@ pipeline {
         stage('Check Docker Images Existence') {
             steps {
                 script {
-                    def backendImageExists = sh(script: "docker image inspect ${BACKEND_IMAGE} &> /dev/null", returnStatus: true)
-                    def frontendImageExists = sh(script: "docker image inspect ${FRONTEND_IMAGE} &> /dev/null", returnStatus: true)
+                    frontendImageExists = sh(script: "docker image inspect ${FRONTEND_IMAGE}", returnStatus: true)
+                    backendImageExists = sh(script: "docker image inspect ${BACKEND_IMAGE}", returnStatus: true)
 
                     if (!backendImageExists) {
                         error("Backend Docker image does not exist: ${BACKEND_IMAGE}")
