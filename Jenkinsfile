@@ -1,9 +1,10 @@
 pipeline {
     agent any
-
     environment {
         BACKEND_IMAGE = 'autobotsmlops/backend:latest'
         FRONTEND_IMAGE = 'autobotsmlops/frontend:latest'
+        MYSQL_ROOT_PASSWORD = 'root'
+        MYSQL_DATABASE = 'TODO'
     }
 
     stages {
@@ -18,11 +19,17 @@ pipeline {
                     }
                     if (!frontendImageExists) {
                         error("Frontend Docker image does not exist: ${FRONTEND_IMAGE}")
+    
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    // Build and push MySQL Docker image
+                    docker.build("my-mysql-image:${env.BUILD_NUMBER}")
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        docker.image("my-mysql-image:${env.BUILD_NUMBER}").push()
                     }
                 }
             }
-        }
-
         stage('Build and Run Docker Compose') {
             steps {
                 script {

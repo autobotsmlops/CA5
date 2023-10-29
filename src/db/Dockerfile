@@ -4,7 +4,6 @@ FROM mysql:latest
 
 EXPOSE 3306
 
-# Set environment variables
 ENV MYSQL_ROOT_PASSWORD=root
 ENV MYSQL_DATABASE=calculator
 
