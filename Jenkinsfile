@@ -4,15 +4,18 @@ pipeline {
     environment {
         MYSQL_ROOT_PASSWORD = 'root'
         MYSQL_DATABASE = 'TODO'
+        DOCKER_COMPOSE_URL = 'https://github.com/docker/compose/releases/latest/download/docker-compose-Linux-x86_64'
+        DOCKER_COMPOSE_PATH = "${JENKINS_HOME}/tools/compose/docker-compose"
     }
     
     stages {
         stage('Install Docker Compose') {
             steps {
                 script {
-                    // Install Docker Compose
-                    sh 'curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose'
-                    sh 'chmod +x /usr/local/bin/docker-compose'
+                    // Download Docker Compose binary
+                    sh "curl -L ${DOCKER_COMPOSE_URL} -o ${DOCKER_COMPOSE_PATH}"
+                    // Ensure executable permissions
+                    sh "chmod +x ${DOCKER_COMPOSE_PATH}"
                 }
             }
         }
@@ -21,8 +24,8 @@ pipeline {
             steps {
                 script {
                     // Build and run docker-compose using the installed binary
-                    sh 'docker-compose -f docker-compose.yaml build'
-                    sh 'docker-compose -f docker-compose.yaml up -d'
+                    sh "${DOCKER_COMPOSE_PATH} -f docker-compose.yaml build"
+                    sh "${DOCKER_COMPOSE_PATH} -f docker-compose.yaml up -d"
                 }
             }
         }
