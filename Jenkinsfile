@@ -49,11 +49,10 @@ pipeline {
     post {
         always {
             script {
-                // Stop and remove containers
-                docker.stop('backend-container', true)
-                docker.stop('frontend-container', true)
-                docker.remove('backend-container', true)
-                docker.remove('frontend-container', true)
+                sh 'docker stop backend-container'
+                sh 'docker stop frontend-container'
+                sh 'docker rm backend-container'
+                sh 'docker rm frontend-container'
             }
         }
     }
