@@ -44,14 +44,20 @@ pipeline {
                 }
             }
         }
-    }
     
-    post {
-        always {
+    
+        stage('Stop Containers') {
+            steps {
                 sh 'docker stop backend-container'
                 sh 'docker stop frontend-container'
+            }
+        }
+        
+        stage('Remove Containers') {
+            steps {
                 sh 'docker rm backend-container'
                 sh 'docker rm frontend-container'
+            }
         }
-    }
+    }    
 }
