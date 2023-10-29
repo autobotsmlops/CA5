@@ -3,7 +3,9 @@ pipeline {
 
     parameters{
        string(name: 'VERSION', defaultValue: '1.0', description: 'Add version number')
+       booleanParam(name: 'BUILD', defaultValue: true, description: 'added to enable or disable Build for testing')
        booleanParam(name: 'DEPLOY', defaultValue: true, description: 'added to enable or disable Deployement')
+
     }
 
     environment {
@@ -21,19 +23,33 @@ pipeline {
             steps {
                 script {
                     // Check if the Docker images exist on Docker Hub
-                    sh(script: 'echo docker image inspect ${BACKEND_IMAGE}')
+                    def res = sh(script: 'docker image inspect ${BACKEND_IMAGE}')
+
+                    echo "${res}"
                 }
             }
         }  
     
-        stage('Build and Push Docker Image') {
+        stage('Build and Push Docker Images') {
             steps {
                 script {
-                    // Build the Docker image
-                    sh 'docker build -t ${BACKEND_IMAGE} -f Dockerfile ./src/db'
-                    sh 'docker build -t ${FRONTEND_IMAGE} -f Dockerfile .'
-
-                    // Push the Docker image to Docker Hub
+                    // Build Backend Image 
+                    if (params.BUILD) {
+                        sh 'docker build -t ${BACKEND_IMAGE} -f Dockerfile ./src/web'
+                    }
+                }
+            }
+            steps {
+                script {
+                    // Build Frontend Image 
+                    if (params.BUILD) {
+                        sh 'docker build -t ${FRONTEND_IMAGE} -f Dockerfile .'
+                    } 
+                }
+            }
+            steps {
+                script {
+                    // Push the Docker images to Docker Hub
                     sh 'docker push ${BACKEND_IMAGE}'
                     sh 'docker push ${FRONTEND_IMAGE}'
                 }
@@ -57,6 +73,8 @@ pipeline {
             echo "Success"
             // Add post-build steps here if needed
             echo "Database Service built and pushed successfully!"
+            echo "Frontend Service built and pushed successfully!"
+            echo "Docker Compose services built and running successfully!"
         }
         failure {
             echo "Failure"
