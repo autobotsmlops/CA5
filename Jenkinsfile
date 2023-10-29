@@ -1,5 +1,10 @@
 pipeline {
     agent any
+
+    tools {
+        // Define the name of the Docker installation defined in Jenkins configuration
+        dockerTool 'Docker'
+    }
     
     environment {
         MYSQL_ROOT_PASSWORD = 'root'
