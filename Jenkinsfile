@@ -5,7 +5,6 @@ pipeline {
        string(name: 'VERSION', defaultValue: '1.0', description: 'Add version number')
        booleanParam(name: 'BUILD', defaultValue: true, description: 'added to enable or disable Build for testing')
        booleanParam(name: 'DEPLOY', defaultValue: true, description: 'added to enable or disable Deployement')
-
     }
 
     environment {
@@ -15,7 +14,7 @@ pipeline {
         MYSQL_DATABASE = 'TODO'
         MYSQL_USER = 'root'
         MYSQL_PASSWORD = 'root'
-        SERVER_CREDENTIALS=credentials('autobotsGit')
+        SERVER_CREDENTIALS=credentials('autobotsDocker')
     }
 
     stages {
@@ -23,9 +22,20 @@ pipeline {
             steps {
                 script {
                     // Check if the Docker images exist on Docker Hub
-                    def res = sh(script: 'docker image inspect ${BACKEND_IMAGE}')
+                    def backendImageExists = sh(script: 'docker pull ${BACKEND_IMAGE}', returnStatus: true) == 0
+                    def frontendImageExists = sh(script: 'docker pull ${FRONTEND_IMAGE}', returnStatus: true) == 0
 
-                    echo "${res}"
+                    if (backendImageExists) {
+                        echo "Backend Image exists"
+                    } else {
+                        echo "Backend Image does not exist"
+                    }
+
+                    if (frontendImageExists) {
+                        echo "Frontend Image exists"
+                    } else {
+                        echo "Frontend Image does not exist"
+                    }
                 }
             }
         }  
@@ -38,11 +48,20 @@ pipeline {
                         sh 'docker build -t ${BACKEND_IMAGE} -f Dockerfile ./src/db'
                         // Build Frontend Image 
                         sh 'docker build -t ${FRONTEND_IMAGE} -f Dockerfile .'
+                    } else {
+                        echo "Build is disabled"
                     } 
 
                     // Push the Docker images to Docker Hub
-                    sh 'docker push ${BACKEND_IMAGE}'
-                    sh 'docker push ${FRONTEND_IMAGE}'
+                    if (params.DEPLOY) {
+                        withCredentials([usernamePassword(credentialsId: 'autobotsDocker', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                            sh 'docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}'
+                        }
+                        sh 'docker push ${BACKEND_IMAGE}'
+                        sh 'docker push ${FRONTEND_IMAGE}'
+                    } else {
+                        echo "Deployment is disabled"
+                    }
                 }
             }
         }
