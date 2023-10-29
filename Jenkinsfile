@@ -35,7 +35,7 @@ pipeline {
                 script {
                     if (params.BUILD) {
                         // Build Backend Image 
-                        sh 'docker build -t ${BACKEND_IMAGE} -f Dockerfile ./src/web'
+                        sh 'docker build -t ${BACKEND_IMAGE} -f Dockerfile ./src/db'
                         // Build Frontend Image 
                         sh 'docker build -t ${FRONTEND_IMAGE} -f Dockerfile .'
                     } 
