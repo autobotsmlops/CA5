@@ -1,10 +1,13 @@
 pipeline {
     agent any
+
     environment {
         BACKEND_IMAGE = 'autobotsmlops/backend:latest'
         FRONTEND_IMAGE = 'autobotsmlops/frontend:latest'
         MYSQL_ROOT_PASSWORD = 'root'
         MYSQL_DATABASE = 'TODO'
+        MYSQL_USER = 'root'
+        MYSQL_PASSWORD = 'root'
     }
 
     stages {
@@ -23,11 +26,11 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    // Build and push MySQL Docker image
-                    docker.build("my-mysql-image:${env.BUILD_NUMBER}")
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        docker.image("my-mysql-image:${env.BUILD_NUMBER}").push()
-                    }
+                    // Build the Docker image
+                    def customImage = docker.build("database-service:${env.BUILD_NUMBER}")
+
+                    // Push the Docker image to Docker Hub
+                    customImage.push()
                 }
             }
         stage('Build and Run Docker Compose') {
@@ -50,6 +53,12 @@ pipeline {
         failure {
             echo "Failure"
             // Add failure-handling steps here if needed
+        }
+    }
+
+    post {
+        success {
+            echo "Database Service built and pushed successfully!"
         }
     }
 }
