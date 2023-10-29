@@ -1,32 +1,35 @@
-#docker_compose.yaml
 version: '3'
 
 services:
-  app:
-    build: .
-    links:
-      - db
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: autobotsmlops/ca4-web:latest
+    build: .
     ports:
-      - "5000:80"
+      - "5050:5000"
     environment:
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0
-    volumes:
-      - ./app:/app
+      - FLASK_RUN_PORT=5000
+      - DB_HOST=db
+      - ENV=container
+    depends_on:
+      db:
+        condition: service_healthy  # Wait for the 'db' service to be healthy
+  
   db:
-    image: mysql:latest
+    image: autobotsmlops/ca4-db:latest
+    build: 
+      context: ./src/db
+      dockerfile: Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: calculator
+      MYSQL_DATABASE: TODO
     ports:
       - "3306:3306"
     volumes:
       - ./src/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
