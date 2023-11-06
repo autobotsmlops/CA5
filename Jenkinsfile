@@ -8,8 +8,8 @@ pipeline {
     }
 
     environment {
-        BACKEND_IMAGE = 'autobotsmlops/ca4-web:latest'
-        FRONTEND_IMAGE = 'autobotsmlops/ca4-db:latest'
+        FRONTEND_IMAGE = 'autobotsmlops/ca4-web:latest'
+        BACKEND_IMAGE = 'autobotsmlops/ca4-db:latest'
         MYSQL_ROOT_PASSWORD = 'root'
         MYSQL_DATABASE = 'TODO'
         MYSQL_USER = 'root'
